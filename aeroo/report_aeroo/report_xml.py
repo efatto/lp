@@ -375,8 +375,14 @@ class report_xml(osv.osv):
     }
 
     def fields_view_get(self, cr, user, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
+        if context.get('default_report_type')=='aeroo':
+            mda_mod = self.pool['ir.model.data']
+            if view_type == 'form':
+                view_id = mda_mod.get_object_reference(cr, user, 'report_aeroo', 'act_report_xml_view1')[1]
+            elif view_type == 'tree':
+                view_id = mda_mod.get_object_reference(cr, user, 'report_aeroo', 'act_aeroo_report_xml_view_tree')[1]
         res = super(report_xml, self).fields_view_get(cr, user, view_id, view_type, context, toolbar, submenu)
-        if view_type=='form':
+        if view_type=='form' and context.get('default_report_type')=='aeroo':
             ##### Check deferred_processing module #####
             cr.execute("SELECT id, state FROM ir_module_module WHERE name='deferred_processing'")
             deferred_proc_module = cr.dictfetchone()
